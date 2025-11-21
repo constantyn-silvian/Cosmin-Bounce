@@ -1,48 +1,62 @@
-import { useEffect, useState, useRef } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import ball from "./assets/ball.jpg"
+import { useEffect, useRef, useState } from "react";
+import ball from "./assets/ball.jpg";
 
 function App() {
-  const [posx, setPosx] = useState(0);
-  const [posy, setPosy] = useState(0);
-  const [dirx, setDirx] = useState(1);
-  const [diry, setDiry] = useState(1);
-  const imgRef = useRef(null);
-  const bwidth = 300;
-  const bheight = 200;
-  const speed = 1;
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dir = useRef({ x: 1, y: 1 });
+
+  const speed = 3;
+  const width = 250;
+  const height = 200;
+
+  const animate = () => {
+    setPos(prev => {
+      let x = prev.x + dir.current.x * speed;
+      let y = prev.y + dir.current.y * speed;
+
+      const maxX = window.innerWidth - width;
+      const maxY = window.innerHeight - height;
+
+      // coliziune orizont
+      if (x <= 0) {
+        x = 0;
+        dir.current.x = 1;
+      } else if (x >= maxX) {
+        x = maxX;
+        dir.current.x = -1;
+      }
+
+      // coliziune verticală
+      if (y <= 0) {
+        y = 0;
+        dir.current.y = 1;
+      } else if (y >= maxY) {
+        y = maxY;
+        dir.current.y = -1;
+      }
+
+      return { x, y };
+    });
+
+    requestAnimationFrame(animate);
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (imgRef.current) {
-        const rect = imgRef.current.getBoundingClientRect();
-        if (rect.bottom >= window.innerHeight || rect.top <= 0) {
-          setDiry(prev => -prev);
-        }
-        if (rect.left <= 0 || rect.right >= window.innerWidth)
-        {
-          setDirx(prev => -prev);
-        }
-          setPosx(prev => prev + dirx * speed);
-        setPosy(prev => prev + diry * speed);
-      }
-    }, 1)
-    return () => clearInterval(interval)
-  }, [dirx, diry])
+    requestAnimationFrame(animate);
+  }, []);
 
   return (
-    <>
-      <img src={ball} style={{
+    <img
+      src={ball}
+      style={{
         position: "absolute",
-        top: posy,
-        left: posx,
-        width: bwidth,
-        height: bheight
-      }} ref={imgRef} />
-    </>
-  )
+        left: pos.x,
+        top: pos.y,
+        width,
+        height
+      }}
+    />
+  );
 }
 
-export default App
+export default App;
