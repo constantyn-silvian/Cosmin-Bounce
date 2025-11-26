@@ -8,7 +8,6 @@ function App() {
   const speed = 3;
   const width = 250;
   const height = 200;
-
   const animate = () => {
     setPos(prev => {
       let x = prev.x + dir.current.x * speed;
@@ -53,8 +52,10 @@ function App() {
         left: pos.x,
         top: pos.y,
         width,
-        height
+        height,
+        borderRadius: "8px",
       }}
+      className="rounded-md"
     />
   );
 }
